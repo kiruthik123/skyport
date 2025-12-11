@@ -1,57 +1,90 @@
 #!/bin/bash
-#
-# Skyport Panel/Wings Comprehensive Installation Script
-# KS Hosting by KSGaming - Professional Deployment Tool
-#
-# This script installs prerequisites (Docker, Node.js, Git) and offers a menu
-# to install either the Panel or the Wings component, including systemd setup.
-#
-# NOTE: This script assumes a Debian/Ubuntu-based system.
-#
 
-# --- Color Definitions ---
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-PURPLE='\033[0;35m'
-CYAN='\033[0;36m'
-WHITE='\033[1;37m'
-NC='\033[0m' # No Color
-BOLD='\033[1m'
+# =========================================================================
+# ███████╗██╗  ██╗    ██╗  ██╗ ██████╗ ███████╗████████╗██╗███╗   ██╗ ██████╗ 
+# ██╔════╝██║  ██║    ██║  ██║██╔═══██╗██╔════╝╚══██╔══╝██║████╗  ██║██╔════╝ 
+# ███████╗███████║    ███████║██║   ██║███████╗   ██║   ██║██╔██╗ ██║██║  ███╗
+# ╚════██║██╔══██║    ██╔══██║██║   ██║╚════██║   ██║   ██║██║╚██╗██║██║   ██║
+# ███████║██║  ██║    ██║  ██║╚██████╔╝███████║   ██║   ██║██║ ╚████║╚██████╔╝
+# ╚══════╝╚═╝  ╚═╝    ╚═╝  ╚═╝ ╚═════╝ ╚══════╝   ╚═╝   ╚═╝╚═╝  ╚═══╝ ╚═════╝ 
+# =========================================================================
+#                     🚀 KS HOSTING BY KSGAMING 🚀
+# =========================================================================
 
-# --- Configuration Variables ---
-PANEL_DIR="/etc/skyport"
-WINGS_DIR="/etc/skyportd"
-PANEL_REPO="https://github.com/skyport-team/panel"
-WINGS_REPO="https://github.com/skyport-team/skyportd"
-NODE_VERSION="22.x"
+# ==================== ANSI COLOR PALETTE ====================
+COLOR_RESET="\033[0m"
 
-# --- ASCII Art & Branding ---
+# Primary Colors
+RED="\033[1;91m"       # 🔴 Bright Red
+GREEN="\033[1;92m"     # 🟢 Bright Green
+YELLOW="\033[1;93m"    # 🟡 Bright Yellow
+BLUE="\033[1;94m"      # 🔵 Bright Blue
+MAGENTA="\033[1;95m"   # 🟣 Bright Magenta
+CYAN="\033[1;96m"      # 🔵 Bright Cyan
+WHITE="\033[1;97m"     # ⚪ Bright White
+
+# Background Colors
+BG_BLACK="\033[40m"
+BG_BLUE="\033[104m"
+BG_GREEN="\033[102m"
+BG_RED="\033[101m"
+
+# Text Effects
+BOLD="\033[1m"
+UNDERLINE="\033[4m"
+BLINK="\033[5m"
+
+# Icons
+ICON_SUCCESS="✅"
+ICON_ERROR="❌"
+ICON_WARNING="⚠️"
+ICON_INFO="ℹ️"
+ICON_ROCKET="🚀"
+ICON_SERVER="🖥️"
+ICON_GEAR="⚙️"
+ICON_DATABASE="🗄️"
+ICON_NETWORK="🌐"
+ICON_LOCK="🔒"
+ICON_KEY="🔑"
+ICON_FOLDER="📁"
+ICON_DOWNLOAD="📥"
+ICON_BUILD="🔨"
+ICON_START="▶️"
+ICON_STOP="⏹️"
+ICON_EXIT="🚪"
+ICON_HOURGLASS="⏳"
+ICON_CHECK="✔️"
+ICON_PARTY="🎉"
+ICON_FIRE="🔥"
+
+# ==================== UTILITY FUNCTIONS ====================
 print_header() {
     clear
-    echo -e "${PURPLE}"
-    echo '  ╔═══════════════════════════════════════════════════════════════╗'
-    echo '  ║                                                               ║'
-    echo '  ║    ██╗  ██╗███████╗    ██╗  ██╗ ██████╗ ███████╗████████╗    ║'
-    echo '  ║    ██║ ██╔╝██╔════╝    ██║  ██║██╔═══██╗██╔════╝╚══██╔══╝    ║'
-    echo '  ║    █████╔╝ ███████╗    ███████║██║   ██║█████╗     ██║       ║'
-    echo '  ║    ██╔═██╗ ╚════██║    ██╔══██║██║   ██║██╔══╝     ██║       ║'
-    echo '  ║    ██║  ██╗███████║    ██║  ██║╚██████╔╝███████╗   ██║       ║'
-    echo '  ║    ╚═╝  ╚═╝╚══════╝    ╚═╝  ╚═╝ ╚═════╝ ╚══════╝   ╚═╝       ║'
-    echo '  ║                                                               ║'
-    echo '  ║           🚀 ${BOLD}Skyport Professional Installer${NC}${PURPLE} 🚀           ║'
-    echo '  ║                 ${BOLD}Powered by KS Hosting${NC}${PURPLE}                    ║'
-    echo '  ╚═══════════════════════════════════════════════════════════════╝'
-    echo -e "${NC}"
+    echo -e "${BG_BLUE}${WHITE}════════════════════════════════════════════════════════════${COLOR_RESET}"
+    echo -e "${BG_BLUE}${WHITE}                ${ICON_ROCKET} KS HOSTING CONTROL CENTER ${ICON_ROCKET}           ${COLOR_RESET}"
+    echo -e "${BG_BLUE}${WHITE}════════════════════════════════════════════════════════════${COLOR_RESET}\n"
 }
 
-# --- Spinner Animation ---
+print_section() {
+    echo -e "\n${CYAN}${ICON_INFO} ${BOLD}$1${COLOR_RESET}"
+    echo -e "${BLUE}════════════════════════════════════════════════════════════${COLOR_RESET}"
+}
+
+print_status() {
+    local status=$1
+    local message=$2
+    case $status in
+        "success") echo -e "${GREEN}${ICON_SUCCESS} ${message}${COLOR_RESET}" ;;
+        "error") echo -e "${RED}${ICON_ERROR} ${message}${COLOR_RESET}" ;;
+        "warning") echo -e "${YELLOW}${ICON_WARNING} ${message}${COLOR_RESET}" ;;
+        "info") echo -e "${CYAN}${ICON_INFO} ${message}${COLOR_RESET}" ;;
+    esac
+}
+
 spinner() {
     local pid=$1
-    local delay=0.15
-    local spinstr='⣾⣽⣻⢿⡿⣟⣯⣷'
-    echo -n "   "
+    local delay=0.1
+    local spinstr='⣷⣯⣟⡿⢿⣻⣽⣾'
     while [ "$(ps a | awk '{print $1}' | grep $pid)" ]; do
         local temp=${spinstr#?}
         printf " [%c]  " "$spinstr"
@@ -62,462 +95,346 @@ spinner() {
     printf "    \b\b\b\b"
 }
 
-# --- Function Definitions ---
-
-check_root() {
-    if [[ $EUID -ne 0 ]]; then
-        echo -e "❌ ${RED}${BOLD}ERROR: This script must be run as root or with 'sudo'${NC}"
-        echo -e "   📝 Use: ${CYAN}sudo bash $0${NC}"
-        exit 1
-    fi
+progress_bar() {
+    local duration=$1
+    local width=50
+    local increment=$((100 / width))
+    local count=0
+    printf "${BLUE}["
+    while [ $count -lt 100 ]; do
+        printf "▰"
+        count=$((count + increment))
+        sleep $(echo "scale=4; $duration/$width" | bc)
+    done
+    printf "]${COLOR_RESET}\n"
 }
 
-print_step() {
-    echo -e "\n${BLUE}${BOLD}📦 Step $1:${NC} ${WHITE}$2${NC}"
-}
-
-print_success() {
-    echo -e "   ✅ ${GREEN}$1${NC}"
-}
-
-print_warning() {
-    echo -e "   ⚠️  ${YELLOW}$1${NC}"
-}
-
-print_error() {
-    echo -e "   ❌ ${RED}$1${NC}"
-}
-
-print_info() {
-    echo -e "   🔍 ${CYAN}$1${NC}"
-}
-
-install_prerequisites() {
-    print_step "1" "Installing System Prerequisites"
+# ==================== DEPENDENCY CHECK ====================
+check_dependencies() {
+    print_section "System Dependency Verification ${ICON_GEAR}"
     
-    echo -e "   📊 ${WHITE}Detecting system information...${NC}"
-    lsb_release -d | cut -f2
+    local missing=()
     
-    # Update system
-    print_info "Updating package repositories..."
-    apt-get update > /dev/null 2>&1 &
-    spinner $!
-    print_success "System updated successfully"
+    echo -e "${WHITE}${ICON_HOURGLASS} Checking required packages...${COLOR_RESET}"
     
-    # Install Docker
-    print_info "Installing Docker Engine..."
-    if ! command -v docker &> /dev/null; then
-        curl -fsSL https://get.docker.com -o get-docker.sh > /dev/null 2>&1 &
-        spinner $!
-        sh get-docker.sh > /dev/null 2>&1 &
-        spinner $!
-        rm get-docker.sh
-        print_success "Docker installed successfully"
+    # Check Git
+    if command -v git &> /dev/null; then
+        echo -e "${GREEN}${ICON_CHECK} Git ${BOLD}$(git --version | awk '{print $3}')${COLOR_RESET}"
     else
-        print_success "Docker already installed"
+        echo -e "${RED}${ICON_ERROR} Git not found${COLOR_RESET}"
+        missing+=("git")
     fi
     
-    # Enable Docker
-    systemctl enable docker > /dev/null 2>&1
-    systemctl start docker > /dev/null 2>&1
-    
-    # Install Node.js
-    print_info "Installing Node.js ${NODE_VERSION}..."
-    if ! command -v node &> /dev/null; then
-        curl -fsSL https://deb.nodesource.com/setup_${NODE_VERSION} | bash - > /dev/null 2>&1 &
-        spinner $!
-        apt-get install -y nodejs > /dev/null 2>&1 &
-        spinner $!
-        print_success "Node.js installed successfully"
+    # Check Node.js
+    if command -v node &> /dev/null; then
+        echo -e "${GREEN}${ICON_CHECK} Node.js ${BOLD}$(node --version)${COLOR_RESET}"
     else
-        print_success "Node.js already installed"
+        echo -e "${RED}${ICON_ERROR} Node.js not found${COLOR_RESET}"
+        missing+=("nodejs")
     fi
     
-    # Install Git
-    print_info "Installing Git..."
-    apt-get install -y git > /dev/null 2>&1 &
-    spinner $!
-    print_success "Git installed successfully"
+    # Check npm
+    if command -v npm &> /dev/null; then
+        echo -e "${GREEN}${ICON_CHECK} npm ${BOLD}$(npm --version)${COLOR_RESET}"
+    else
+        echo -e "${RED}${ICON_ERROR} npm not found${COLOR_RESET}"
+        missing+=("npm")
+    fi
     
-    # Install additional dependencies
-    print_info "Installing additional packages..."
-    apt-get install -y curl wget gnupg lsb-release ca-certificates > /dev/null 2>&1 &
-    spinner $!
-    print_success "Additional packages installed"
+    if [ ${#missing[@]} -ne 0 ]; then
+        print_status "error" "Missing dependencies detected!"
+        echo -e "${YELLOW}${ICON_WARNING} Install missing packages with:${COLOR_RESET}"
+        echo -e "${WHITE}  sudo apt-get install ${missing[*]}${COLOR_RESET}"
+        return 1
+    fi
     
-    echo -e "\n${GREEN}${BOLD}✨ All prerequisites installed successfully!${NC}"
+    print_status "success" "All dependencies satisfied! ${ICON_PARTY}"
+    return 0
 }
 
+# ==================== INSTALLATION FUNCTIONS ====================
 install_panel() {
     print_header
-    echo -e "${CYAN}${BOLD}╔═══════════════════════════════════════════════════════════════╗${NC}"
-    echo -e "${CYAN}${BOLD}║                   🖥️  PANEL INSTALLATION                    ║${NC}"
-    echo -e "${CYAN}${BOLD}╚═══════════════════════════════════════════════════════════════╝${NC}\n"
+    print_section "Airlink Panel Installation ${ICON_SERVER}"
     
-    install_prerequisites
-    
-    print_step "2" "Installing Skyport Panel"
-    
-    # Check for existing installation
-    if [ -d "$PANEL_DIR" ]; then
-        print_warning "Panel directory already exists at ${PANEL_DIR}"
-        echo -e "${YELLOW}Would you like to:${NC}"
-        echo -e "  1) ${CYAN}Backup and reinstall${NC}"
-        echo -e "  2) ${RED}Abort installation${NC}"
-        read -rp "Choice [1-2]: " choice
-        
-        if [ "$choice" == "1" ]; then
-            backup_dir="${PANEL_DIR}_backup_$(date +%Y%m%d_%H%M%S)"
-            print_info "Backing up to ${backup_dir}..."
-            cp -r "$PANEL_DIR" "$backup_dir" &
-            spinner $!
-            print_success "Backup created successfully"
-            rm -rf "$PANEL_DIR"
-        else
-            print_error "Installation aborted"
-            return 1
-        fi
+    if ! check_dependencies; then
+        read -r -p "$(echo -e "${YELLOW}${ICON_WARNING} Continue anyway? (y/N): ${COLOR_RESET}")" -n 1
+        echo
+        [[ ! $REPLY =~ ^[Yy]$ ]] && return
     fi
+    
+    echo -e "${MAGENTA}${ICON_DOWNLOAD} ${BOLD}Step 1: Downloading Panel Source Code${COLOR_RESET}"
+    echo -e "${WHITE}└─ Destination: /var/www/panel${COLOR_RESET}"
+    
+    # Create directory if it doesn't exist
+    sudo mkdir -p /var/www/
+    cd /var/www/ || { print_status "error" "Failed to access /var/www/"; return 1; }
     
     # Clone repository
-    print_info "Cloning Skyport Panel repository..."
-    git clone "$PANEL_REPO" /tmp/panel > /dev/null 2>&1 &
-    spinner $!
-    mkdir -p "$PANEL_DIR"
-    mv /tmp/panel/* "$PANEL_DIR/"
-    rm -rf /tmp/panel
-    print_success "Repository cloned to ${PANEL_DIR}"
-    
-    cd "$PANEL_DIR"
-    
-    # Install dependencies
-    print_info "Installing Node.js dependencies..."
-    npm install --silent > /dev/null 2>&1 &
-    spinner $!
-    print_success "Dependencies installed"
-    
-    # Setup configuration
-    print_info "Setting up configuration..."
-    if [ -f "example_config.json" ]; then
-        cp example_config.json config.json
-        print_success "Configuration template created"
+    if [ -d "panel" ]; then
+        echo -e "${YELLOW}${ICON_WARNING} Panel directory exists. Updating...${COLOR_RESET}"
+        cd panel && git pull
     else
-        print_warning "No example config found, creating basic config..."
-        cat > config.json << EOF
-{
-    "database": {
-        "host": "localhost",
-        "port": 3306,
-        "user": "skyport",
-        "password": "changeme",
-        "database": "skyport"
-    },
-    "panel": {
-        "host": "0.0.0.0",
-        "port": 8080,
-        "ssl": false
-    }
-}
-EOF
-        print_success "Basic configuration created"
+        git clone https://github.com/AirlinkLabs/panel.git &
+        spinner $!
+        cd panel || { print_status "error" "Failed to enter panel directory"; return 1; }
     fi
     
-    # Database setup
-    print_info "Setting up database..."
-    npm run seed --silent > /dev/null 2>&1 &
+    echo -e "\n${MAGENTA}${ICON_LOCK} ${BOLD}Step 2: Setting Permissions${COLOR_RESET}"
+    sudo chown -R www-data:www-data /var/www/panel
+    sudo chmod -R 755 /var/www/panel
+    print_status "success" "Permissions configured"
+    
+    echo -e "\n${MAGENTA}${ICON_GEAR} ${BOLD}Step 3: Installing Dependencies${COLOR_RESET}"
+    npm install -g typescript &
     spinner $!
-    print_success "Database seeded"
-    
-    # Create admin user
-    print_info "Creating admin user..."
-    npm run createUser --silent > /dev/null 2>&1 &
+    npm install --omit=dev &
     spinner $!
-    print_success "Admin user created"
+    print_status "success" "Dependencies installed"
     
-    # Create systemd service
-    print_info "Creating systemd service..."
-    cat > /etc/systemd/system/skyport-panel.service << EOF
-[Unit]
-Description=Skyport Panel - Game Server Management
-Documentation=https://github.com/skyport-team/panel
-After=network.target docker.service
-Wants=network.target docker.service
-
-[Service]
-Type=simple
-User=root
-WorkingDirectory=${PANEL_DIR}
-Environment=NODE_ENV=production
-ExecStart=/usr/bin/npm start
-Restart=on-failure
-RestartSec=10
-StandardOutput=journal
-StandardError=journal
-SyslogIdentifier=skyport-panel
-LimitNOFILE=65536
-
-[Install]
-WantedBy=multi-user.target
-EOF
+    echo -e "\n${MAGENTA}${ICON_DATABASE} ${BOLD}Step 4: Database Migration${COLOR_RESET}"
+    npm run migrate:dev &
+    spinner $!
+    print_status "success" "Database migrated"
     
-    systemctl daemon-reload
-    systemctl enable skyport-panel.service > /dev/null 2>&1
-    print_success "Systemd service created and enabled"
+    echo -e "\n${MAGENTA}${ICON_BUILD} ${BOLD}Step 5: Building Application${COLOR_RESET}"
+    npm run build-ts &
+    spinner $!
+    print_status "success" "Build completed"
     
-    # Show completion message
-    print_step "3" "Installation Complete!"
+    echo -e "\n${GREEN}${ICON_PARTY} ${BOLD}Panel Installation Complete!${COLOR_RESET}"
+    echo -e "${WHITE}└─ Start with: ${CYAN}npm run start${COLOR_RESET}"
+    echo -e "${WHITE}└─ Directory: ${YELLOW}/var/www/panel${COLOR_RESET}"
     
-    echo -e "${GREEN}${BOLD}"
-    echo '  ╔═══════════════════════════════════════════════════════════════╗'
-    echo '  ║                    🎉 PANEL INSTALLED! 🎉                    ║'
-    echo '  ╠═══════════════════════════════════════════════════════════════╣'
-    echo '  ║                                                               ║'
-    echo '  ║  📍 Installation Directory: /etc/skyport                      ║'
-    echo '  ║  ⚙️  Configuration File:    /etc/skyport/config.json          ║'
-    echo '  ║  🚀 Service Name:          skyport-panel                      ║'
-    echo '  ║                                                               ║'
-    echo '  ║  📋 Next Steps:                                               ║'
-    echo '  ║    1. Edit config.json with your database details             ║'
-    echo '  ║    2. Start panel: systemctl start skyport-panel              ║'
-    echo '  ║    3. Check status: systemctl status skyport-panel            ║'
-    echo '  ║    4. View logs: journalctl -u skyport-panel -f               ║'
-    echo '  ║                                                               ║'
-    echo '  ╚═══════════════════════════════════════════════════════════════╝'
-    echo -e "${NC}"
-    
-    echo -e "\n${CYAN}${BOLD}🌐 Access your panel at:${NC} ${WHITE}http://$(hostname -I | awk '{print $1}'):8080${NC}"
-    echo -e "${YELLOW}${BOLD}⚠️  Don't forget to configure your firewall!${NC}\n"
+    progress_bar 2
 }
 
 install_wings() {
     print_header
-    echo -e "${BLUE}${BOLD}╔═══════════════════════════════════════════════════════════════╗${NC}"
-    echo -e "${BLUE}${BOLD}║                   🚀 WINGS INSTALLATION                      ║${NC}"
-    echo -e "${BLUE}${BOLD}╚═══════════════════════════════════════════════════════════════╝${NC}\n"
+    print_section "Airlink Wings Installation ${ICON_ROCKET}"
     
-    install_prerequisites
-    
-    print_step "2" "Installing Skyport Wings"
-    
-    # Check for existing installation
-    if [ -d "$WINGS_DIR" ]; then
-        print_warning "Wings directory already exists at ${WINGS_DIR}"
-        echo -e "${YELLOW}Would you like to:${NC}"
-        echo -e "  1) ${CYAN}Backup and reinstall${NC}"
-        echo -e "  2) ${RED}Abort installation${NC}"
-        read -rp "Choice [1-2]: " choice
-        
-        if [ "$choice" == "1" ]; then
-            backup_dir="${WINGS_DIR}_backup_$(date +%Y%m%d_%H%M%S)"
-            print_info "Backing up to ${backup_dir}..."
-            cp -r "$WINGS_DIR" "$backup_dir" &
-            spinner $!
-            print_success "Backup created successfully"
-            rm -rf "$WINGS_DIR"
-        else
-            print_error "Installation aborted"
-            return 1
-        fi
+    if ! check_dependencies; then
+        read -r -p "$(echo -e "${YELLOW}${ICON_WARNING} Continue anyway? (y/N): ${COLOR_RESET}")" -n 1
+        echo
+        [[ ! $REPLY =~ ^[Yy]$ ]] && return
     fi
+    
+    echo -e "${MAGENTA}${ICON_DOWNLOAD} ${BOLD}Step 1: Downloading Wings Source Code${COLOR_RESET}"
+    echo -e "${WHITE}└─ Destination: /etc/daemon${COLOR_RESET}"
+    
+    # Create directory if it doesn't exist
+    sudo mkdir -p /etc/
+    cd /etc/ || { print_status "error" "Failed to access /etc/"; return 1; }
     
     # Clone repository
-    print_info "Cloning Skyport Wings repository..."
-    git clone "$WINGS_REPO" /tmp/skyportd > /dev/null 2>&1 &
-    spinner $!
-    mkdir -p "$WINGS_DIR"
-    mv /tmp/skyportd/* "$WINGS_DIR/"
-    rm -rf /tmp/skyportd
-    print_success "Repository cloned to ${WINGS_DIR}"
-    
-    cd "$WINGS_DIR"
-    
-    # Install dependencies
-    print_info "Installing Node.js dependencies..."
-    npm install --silent > /dev/null 2>&1 &
-    spinner $!
-    print_success "Dependencies installed"
-    
-    # Setup configuration
-    print_info "Setting up configuration..."
-    if [ -f "example_config.json" ]; then
-        cp example_config.json config.json
-        print_success "Configuration template created"
+    if [ -d "daemon" ]; then
+        echo -e "${YELLOW}${ICON_WARNING} Daemon directory exists. Updating...${COLOR_RESET}"
+        cd daemon && git pull
     else
-        print_warning "No example config found, creating basic config..."
-        cat > config.json << EOF
-{
-    "panel_url": "http://your-panel-url:8080",
-    "panel_token": "your_token_here",
-    "node": {
-        "name": "$(hostname)",
-        "location": "default"
-    },
-    "docker": {
-        "socket": "/var/run/docker.sock"
-    }
-}
-EOF
-        print_success "Basic configuration created"
+        git clone https://github.com/AirlinkLabs/daemon.git &
+        spinner $!
+        cd daemon || { print_status "error" "Failed to enter daemon directory"; return 1; }
     fi
     
-    # Create systemd service
-    print_info "Creating systemd service..."
-    cat > /etc/systemd/system/skyport-wings.service << EOF
-[Unit]
-Description=Skyport Wings - Game Server Daemon
-Documentation=https://github.com/skyport-team/skyportd
-After=network.target docker.service
-Requires=docker.service
-BindsTo=docker.service
-
-[Service]
-Type=simple
-User=root
-WorkingDirectory=${WINGS_DIR}
-Environment=NODE_ENV=production
-ExecStart=/usr/bin/node ${WINGS_DIR}/index.js
-Restart=always
-RestartSec=10
-StandardOutput=journal
-StandardError=journal
-SyslogIdentifier=skyport-wings
-LimitNOFILE=65536
-
-[Install]
-WantedBy=multi-user.target
-EOF
+    echo -e "\n${MAGENTA}${ICON_LOCK} ${BOLD}Step 2: Setting Permissions${COLOR_RESET}"
+    sudo chown -R www-data:www-data /etc/daemon
+    sudo chmod -R 755 /etc/daemon
+    print_status "success" "Permissions configured"
     
-    systemctl daemon-reload
-    systemctl enable skyport-wings.service > /dev/null 2>&1
-    print_success "Systemd service created and enabled"
+    echo -e "\n${MAGENTA}${ICON_GEAR} ${BOLD}Step 3: Installing Dependencies${COLOR_RESET}"
+    npm install -g typescript &
+    spinner $!
+    npm install &
+    spinner $!
+    print_status "success" "Dependencies installed"
     
-    # Show completion message
-    print_step "3" "Installation Complete!"
+    echo -e "\n${MAGENTA}${ICON_KEY} ${BOLD}Step 4: Configuration Setup${COLOR_RESET}"
+    if [ -f "example.env" ]; then
+        cp example.env .env
+        echo -e "${YELLOW}${ICON_WARNING} IMPORTANT: Edit configuration file:${COLOR_RESET}"
+        echo -e "${WHITE}└─ ${CYAN}nano /etc/daemon/.env${COLOR_RESET}"
+        echo -e "${WHITE}└─ Set API keys, ports, and server settings${COLOR_RESET}"
+    else
+        print_status "warning" "example.env not found, manual configuration required"
+    fi
     
-    echo -e "${GREEN}${BOLD}"
-    echo '  ╔═══════════════════════════════════════════════════════════════╗'
-    echo '  ║                    🎉 WINGS INSTALLED! 🎉                    ║'
-    echo '  ╠═══════════════════════════════════════════════════════════════╣'
-    echo '  ║                                                               ║'
-    echo '  ║  📍 Installation Directory: /etc/skyportd                     ║'
-    echo '  ║  ⚙️  Configuration File:    /etc/skyportd/config.json         ║'
-    echo '  ║  🚀 Service Name:          skyport-wings                      ║'
-    echo '  ║                                                               ║'
-    echo '  ║  📋 Next Steps:                                               ║'
-    echo '  ║    1. Edit config.json with your Panel URL and token          ║'
-    echo '  ║    2. Start wings: systemctl start skyport-wings              ║'
-    echo '  ║    3. Check status: systemctl status skyport-wings            ║'
-    echo '  ║    4. View logs: journalctl -u skyport-wings -f               ║'
-    echo '  ║                                                               ║'
-    echo '  ╚═══════════════════════════════════════════════════════════════╝'
-    echo -e "${NC}"
+    echo -e "\n${MAGENTA}${ICON_BUILD} ${BOLD}Step 5: Building Wings${COLOR_RESET}"
+    npm run build &
+    spinner $!
+    print_status "success" "Build completed"
     
-    echo -e "\n${CYAN}${BOLD}🔗 Remember to add this node to your Panel configuration!${NC}"
-    echo -e "${YELLOW}${BOLD}⚠️  Ensure Docker is properly configured for game servers!${NC}\n"
+    echo -e "\n${GREEN}${ICON_PARTY} ${BOLD}Wings Installation Complete!${COLOR_RESET}"
+    echo -e "${WHITE}└─ Start with: ${CYAN}npm run start${COLOR_RESET}"
+    echo -e "${WHITE}└─ Directory: ${YELLOW}/etc/daemon${COLOR_RESET}"
+    echo -e "${WHITE}└─ Config: ${YELLOW}/etc/daemon/.env${COLOR_RESET}"
+    
+    progress_bar 2
 }
 
+# ==================== SERVICE MANAGEMENT ====================
+start_panel() {
+    print_header
+    print_section "Starting Airlink Panel ${ICON_START}"
+    
+    if [ ! -d "/var/www/panel" ]; then
+        print_status "error" "Panel not installed!"
+        echo -e "${YELLOW}Run option 1 to install first${COLOR_RESET}"
+        sleep 3
+        return
+    fi
+    
+    cd /var/www/panel || return
+    
+    echo -e "${GREEN}${ICON_ROCKET} Launching Panel...${COLOR_RESET}"
+    echo -e "${YELLOW}${ICON_WARNING} Press ${BOLD}CTRL+C${COLOR_RESET}${YELLOW} to stop${COLOR_RESET}"
+    echo -e "${BLUE}════════════════════════════════════════════════════════════${COLOR_RESET}"
+    
+    # Start panel with colored output
+    npm run start | while IFS= read -r line; do
+        case "$line" in
+            *error*|*Error*|*ERROR*)
+                echo -e "${RED}$line${COLOR_RESET}"
+                ;;
+            *warn*|*Warn*|*WARN*)
+                echo -e "${YELLOW}$line${COLOR_RESET}"
+                ;;
+            *success*|*Success*|*SUCCESS*)
+                echo -e "${GREEN}$line${COLOR_RESET}"
+                ;;
+            *info*|*Info*|*INFO*)
+                echo -e "${CYAN}$line${COLOR_RESET}"
+                ;;
+            *)
+                echo -e "${WHITE}$line${COLOR_RESET}"
+                ;;
+        esac
+    done
+    
+    echo -e "\n${YELLOW}${ICON_STOP} Panel service stopped${COLOR_RESET}"
+}
+
+start_wings() {
+    print_header
+    print_section "Starting Airlink Wings ${ICON_START}"
+    
+    if [ ! -d "/etc/daemon" ]; then
+        print_status "error" "Wings not installed!"
+        echo -e "${YELLOW}Run option 2 to install first${COLOR_RESET}"
+        sleep 3
+        return
+    fi
+    
+    cd /etc/daemon || return
+    
+    echo -e "${GREEN}${ICON_ROCKET} Launching Wings...${COLOR_RESET}"
+    echo -e "${YELLOW}${ICON_WARNING} Press ${BOLD}CTRL+C${COLOR_RESET}${YELLOW} to stop${COLOR_RESET}"
+    echo -e "${BLUE}════════════════════════════════════════════════════════════${COLOR_RESET}"
+    
+    # Start wings with colored output
+    npm run start | while IFS= read -r line; do
+        case "$line" in
+            *error*|*Error*|*ERROR*)
+                echo -e "${RED}$line${COLOR_RESET}"
+                ;;
+            *warn*|*Warn*|*WARN*)
+                echo -e "${YELLOW}$line${COLOR_RESET}"
+                ;;
+            *success*|*Success*|*SUCCESS*)
+                echo -e "${GREEN}$line${COLOR_RESET}"
+                ;;
+            *info*|*Info*|*INFO*)
+                echo -e "${CYAN}$line${COLOR_RESET}"
+                ;;
+            *request*|*response*|*Request*|*Response*)
+                echo -e "${MAGENTA}$line${COLOR_RESET}"
+                ;;
+            *)
+                echo -e "${WHITE}$line${COLOR_RESET}"
+                ;;
+        esac
+    done
+    
+    echo -e "\n${YELLOW}${ICON_STOP} Wings service stopped${COLOR_RESET}"
+}
+
+# ==================== MAIN MENU ====================
 show_menu() {
     print_header
     
-    echo -e "${WHITE}${BOLD}╔═══════════════════════════════════════════════════════════════╗${NC}"
-    echo -e "${WHITE}${BOLD}║                   📜 INSTALLATION MENU                       ║${NC}"
-    echo -e "${WHITE}${BOLD}╠═══════════════════════════════════════════════════════════════╣${NC}"
-    echo -e "${WHITE}${BOLD}║                                                               ║${NC}"
-    echo -e "${WHITE}${BOLD}║  ${CYAN}1) 🖥️  Install Skyport Panel${NC}${WHITE}${BOLD}                         ║${NC}"
-    echo -e "${WHITE}${BOLD}║       ${WHITE}Web interface & API server                      ${WHITE}${BOLD}║${NC}"
-    echo -e "${WHITE}${BOLD}║                                                               ║${NC}"
-    echo -e "${WHITE}${BOLD}║  ${BLUE}2) 🚀 Install Skyport Wings${NC}${WHITE}${BOLD}                         ║${NC}"
-    echo -e "${WHITE}${BOLD}║       ${WHITE}Game server node daemon                         ${WHITE}${BOLD}║${NC}"
-    echo -e "${WHITE}${BOLD}║                                                               ║${NC}"
-    echo -e "${WHITE}${BOLD}║  ${GREEN}3) 📊 System Information${NC}${WHITE}${BOLD}                          ║${NC}"
-    echo -e "${WHITE}${BOLD}║                                                               ║${NC}"
-    echo -e "${WHITE}${BOLD}║  ${YELLOW}4) 🛠️  Prerequisites Only${NC}${WHITE}${BOLD}                         ║${NC}"
-    echo -e "${WHITE}${BOLD}║                                                               ║${NC}"
-    echo -e "${WHITE}${BOLD}║  ${RED}5) 🚪 Exit${NC}${WHITE}${BOLD}                                         ║${NC}"
-    echo -e "${WHITE}${BOLD}║                                                               ║${NC}"
-    echo -e "${WHITE}${BOLD}╚═══════════════════════════════════════════════════════════════╝${NC}"
-    echo -e ""
-    
-    echo -e "${PURPLE}┌─────────────────────────────────────────────────────────────┐${NC}"
-    echo -e "${PURPLE}│  ${BOLD}System:${NC} $(lsb_release -d | cut -f2) $(uname -m)                    ${PURPLE}│${NC}"
-    echo -e "${PURPLE}│  ${BOLD}Hostname:${NC} $(hostname)                                         ${PURPLE}│${NC}"
-    echo -e "${PURPLE}│  ${BOLD}IP Address:${NC} $(hostname -I | awk '{print $1}')                            ${PURPLE}│${NC}"
-    echo -e "${PURPLE}└─────────────────────────────────────────────────────────────┘${NC}"
+    echo -e "${WHITE}${BOLD}╔══════════════════════════════════════════════════════════╗${COLOR_RESET}"
+    echo -e "${WHITE}${BOLD}║                    ${ICON_FIRE} MAIN MENU ${ICON_FIRE}                     ║${COLOR_RESET}"
+    echo -e "${WHITE}${BOLD}╠══════════════════════════════════════════════════════════╣${COLOR_RESET}"
+    echo -e "${WHITE}${BOLD}║                                                        ║${COLOR_RESET}"
+    echo -e "${WHITE}${BOLD}║  ${CYAN}${ICON_SERVER}  ${BOLD}1. INSTALL AIRLINK PANEL                  ║${COLOR_RESET}"
+    echo -e "${WHITE}${BOLD}║  ${CYAN}${ICON_ROCKET}  ${BOLD}2. INSTALL AIRLINK WINGS                  ║${COLOR_RESET}"
+    echo -e "${WHITE}${BOLD}║                                                        ║${COLOR_RESET}"
+    echo -e "${WHITE}${BOLD}╠══════════════════════════════════════════════════════════╣${COLOR_RESET}"
+    echo -e "${WHITE}${BOLD}║            ${YELLOW}${ICON_GEAR} SERVICE MANAGEMENT ${ICON_GEAR}             ║${COLOR_RESET}"
+    echo -e "${WHITE}${BOLD}╠══════════════════════════════════════════════════════════╣${COLOR_RESET}"
+    echo -e "${WHITE}${BOLD}║                                                        ║${COLOR_RESET}"
+    echo -e "${WHITE}${BOLD}║  ${GREEN}${ICON_START}  ${BOLD}3. START PANEL SERVICE                    ║${COLOR_RESET}"
+    echo -e "${WHITE}${BOLD}║  ${GREEN}${ICON_START}  ${BOLD}4. START WINGS SERVICE                    ║${COLOR_RESET}"
+    echo -e "${WHITE}${BOLD}║                                                        ║${COLOR_RESET}"
+    echo -e "${WHITE}${BOLD}╠══════════════════════════════════════════════════════════╣${COLOR_RESET}"
+    echo -e "${WHITE}${BOLD}║                                                        ║${COLOR_RESET}"
+    echo -e "${WHITE}${BOLD}║  ${RED}${ICON_EXIT}  ${BOLD}0. EXIT INSTALLER                          ║${COLOR_RESET}"
+    echo -e "${WHITE}${BOLD}║                                                        ║${COLOR_RESET}"
+    echo -e "${WHITE}${BOLD}╚══════════════════════════════════════════════════════════╝${COLOR_RESET}"
     echo -e ""
 }
 
-show_system_info() {
-    print_header
-    echo -e "${CYAN}${BOLD}╔═══════════════════════════════════════════════════════════════╗${NC}"
-    echo -e "${CYAN}${BOLD}║                   📊 SYSTEM INFORMATION                      ║${NC}"
-    echo -e "${CYAN}${BOLD}╚═══════════════════════════════════════════════════════════════╝${NC}\n"
-    
-    echo -e "${WHITE}${BOLD}System Overview:${NC}"
-    echo -e "  ${CYAN}▸${NC} ${WHITE}OS:${NC} $(lsb_release -d | cut -f2)"
-    echo -e "  ${CYAN}▸${NC} ${WHITE}Kernel:${NC} $(uname -r)"
-    echo -e "  ${CYAN}▸${NC} ${WHITE}Architecture:${NC} $(uname -m)"
-    echo -e "  ${CYAN}▸${NC} ${WHITE}Hostname:${NC} $(hostname)"
-    echo -e "  ${CYAN}▸${NC} ${WHITE}Uptime:${NC} $(uptime -p | sed 's/up //')"
-    
-    echo -e "\n${WHITE}${BOLD}Resource Usage:${NC}"
-    echo -e "  ${CYAN}▸${NC} ${WHITE}CPU Load:${NC} $(uptime | awk -F'load average:' '{print $2}')"
-    echo -e "  ${CYAN}▸${NC} ${WHITE}Memory:${NC} $(free -h | awk '/^Mem:/ {print $3 "/" $2}')"
-    echo -e "  ${CYAN}▸${NC} ${WHITE}Disk:${NC} $(df -h / | awk 'NR==2 {print $3 "/" $2 " (" $5 ")"}')"
-    
-    echo -e "\n${WHITE}${BOLD}Required Software:${NC}"
-    echo -e "  ${CYAN}▸${NC} ${WHITE}Docker:${NC} $(docker --version 2>/dev/null | cut -d' ' -f3 || echo "Not installed")"
-    echo -e "  ${CYAN}▸${NC} ${WHITE}Node.js:${NC} $(node --version 2>/dev/null || echo "Not installed")"
-    echo -e "  ${CYAN}▸${NC} ${WHITE}npm:${NC} $(npm --version 2>/dev/null || echo "Not installed")"
-    echo -e "  ${CYAN}▸${NC} ${WHITE}Git:${NC} $(git --version 2>/dev/null | cut -d' ' -f3 || echo "Not installed")"
-    
-    echo -e "\n${WHITE}${BOLD}Network Information:${NC}"
-    echo -e "  ${CYAN}▸${NC} ${WHITE}IP Address:${NC} $(hostname -I | awk '{print $1}')"
-    echo -e "  ${CYAN}▸${NC} ${WHITE}Public IP:${NC} $(curl -s ifconfig.me || echo "Unavailable")"
-    
-    echo -e "\n${GREEN}${BOLD}Press Enter to continue...${NC}"
-    read -r
+main_menu() {
+    while true; do
+        show_menu
+        
+        echo -ne "${MAGENTA}${BLINK}👉${COLOR_RESET} ${BOLD}Select option [0-4]: ${COLOR_RESET}"
+        read -r choice
+        
+        case $choice in
+            1)
+                install_panel
+                echo -e "\n${WHITE}Press ${GREEN}ENTER${WHITE} to continue...${COLOR_RESET}"
+                read -r
+                ;;
+            2)
+                install_wings
+                echo -e "\n${WHITE}Press ${GREEN}ENTER${WHITE} to continue...${COLOR_RESET}"
+                read -r
+                ;;
+            3)
+                start_panel
+                echo -e "\n${WHITE}Press ${GREEN}ENTER${WHITE} to continue...${COLOR_RESET}"
+                read -r
+                ;;
+            4)
+                start_wings
+                echo -e "\n${WHITE}Press ${GREEN}ENTER${WHITE} to continue...${COLOR_RESET}"
+                read -r
+                ;;
+            0)
+                print_header
+                echo -e "${GREEN}${BOLD}${ICON_PARTY} Thank you for using KS HOSTING! ${ICON_PARTY}${COLOR_RESET}"
+                echo -e "${CYAN}${BOLD}           Have a productive day! 👨‍💻${COLOR_RESET}\n"
+                echo -e "${BLUE}════════════════════════════════════════════════════════════${COLOR_RESET}"
+                exit 0
+                ;;
+            *)
+                echo -e "${RED}${ICON_ERROR} Invalid option! Please select 0-4${COLOR_RESET}"
+                sleep 2
+                ;;
+        esac
+    done
 }
 
-# --- Main Execution ---
-check_root
+# ==================== INITIALIZATION ====================
+# Check if running as root
+if [ "$EUID" -eq 0 ]; then 
+    echo -e "${YELLOW}${ICON_WARNING} Warning: Running as root is not recommended${COLOR_RESET}"
+    sleep 1
+fi
 
-while true; do
-    show_menu
-    
-    echo -e "${YELLOW}${BOLD}👉 Please select an option (1-5):${NC} "
-    echo -ne "${WHITE}${BOLD}➤ ${NC}"
-    read -r choice
-    
-    case $choice in
-        1)
-            install_panel
-            ;;
-        2)
-            install_wings
-            ;;
-        3)
-            show_system_info
-            ;;
-        4)
-            print_header
-            install_prerequisites
-            echo -e "\n${GREEN}${BOLD}Press Enter to continue...${NC}"
-            read -r
-            ;;
-        5)
-            print_header
-            echo -e "${GREEN}${BOLD}"
-            echo '  ╔═══════════════════════════════════════════════════════════════╗'
-            echo '  ║                    👋 THANK YOU! 👋                         ║'
-            echo '  ║               Skyport Installation Complete                 ║'
-            echo '  ║          For support, visit: KS Hosting by KSGaming         ║'
-            echo '  ╚═══════════════════════════════════════════════════════════════╝'
-            echo -e "${NC}"
-            exit 0
-            ;;
-        *)
-            echo -e "\n${RED}${BOLD}❌ Invalid option! Please choose between 1-5${NC}"
-            sleep 2
-            ;;
-    esac
-done
+# Trap for clean exit
+trap 'echo -e "\n${RED}${ICON_ERROR} Interrupted! Exiting...${COLOR_RESET}"; exit 1' INT
+
+# Start the application
+main_menu
